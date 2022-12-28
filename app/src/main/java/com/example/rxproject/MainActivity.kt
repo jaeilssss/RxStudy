@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observer
+import io.reactivex.rxjava3.core.Scheduler
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,6 +28,11 @@ class MainActivity : AppCompatActivity() {
 
 
         observable = Observable.just(greeting)
+
+        observable.subscribeOn(Schedulers.io())
+
+        observable.observeOn(AndroidSchedulers.mainThread())
+
 
         txt = findViewById(R.id.textview)
 
