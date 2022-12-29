@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Observer
 import io.reactivex.rxjava3.core.Scheduler
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.observers.DisposableObserver
 import io.reactivex.rxjava3.schedulers.Schedulers
@@ -20,11 +22,17 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var myObserver : DisposableObserver<String>
 
+
+    private lateinit var myObserver2 : DisposableObserver<String>
+
+
     companion object var TAG : String = "my APP"
 
     private lateinit var txt : TextView
 
 //    private lateinit var disposable : Disposable
+
+    private var compositeDisposable = CompositeDisposable()
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +82,27 @@ class MainActivity : AppCompatActivity() {
             override fun onNext(t: String) {
                 Log.i(TAG , "onComplete invoked")
 
+            Toast.makeText(applicationContext,t.toString(),Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onError(e: Throwable) {
+                Log.i(TAG , "onComplete invoked")
+            }
+
+            override fun onComplete() {
+                Log.i(TAG , "onComplete invoked")
+            }
+
+        }
+
+        compositeDisposable.add(myObserver)
+
+        observable.subscribe(myObserver)
+
+        myObserver2 = object : DisposableObserver<String>() {
+            override fun onNext(t: String) {
+                Log.i(TAG , "onComplete invoked")
+
                 txt.text = t
             }
 
@@ -86,7 +115,9 @@ class MainActivity : AppCompatActivity() {
             }
 
         }
-        observable.subscribe(myObserver)
+
+        compositeDisposable.add(myObserver2)
+        observable.subscribe(myObserver2)
 
 
 
@@ -95,6 +126,10 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        myObserver.dispose()
+//        myObserver.dispose()
+//        myObserver2.dispose()
+
+        compositeDisposable.clear()
+
     }
 }
